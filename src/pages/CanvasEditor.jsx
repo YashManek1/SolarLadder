@@ -15,7 +15,8 @@ function CanvasEditor() {
   const [saving, setSaving] = useState(false);
   const [selectedTool, setSelectedTool] = useState("select");
   const [selectedObject, setSelectedObject] = useState(null);
-  const [key, setKey] = useState(Date.now());
+  const key = Date.now();
+
   useEffect(() => {
     const loadCanvas = async () => {
       try {
@@ -69,48 +70,6 @@ function CanvasEditor() {
     }
   };
 
-  const handleExport = () => {
-    if (canvas) {
-      const dataURL = canvas.toDataURL({
-        format: "png",
-        quality: 1,
-      });
-
-      const link = document.createElement("a");
-      link.download = `canvas-${canvasId}.png`;
-      link.href = dataURL;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
-
-  const handleImportImage = (e) => {
-    const file = e.target.files[0];
-    if (file && canvas) {
-      const reader = new FileReader();
-      reader.onload = (f) => {
-        const data = f.target.result;
-        window.fabric.Image.fromURL(data, (img) => {
-          img.scaleToWidth(300);
-          canvas.add(img);
-          canvas.requestRenderAll();
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="loader">
-          <p>Loading Canvas...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="canvas-editor">
       <header className="editor-header">
@@ -132,7 +91,6 @@ function CanvasEditor() {
         canvas={canvas}
       />
 
-      {/* Use the key to force remount when needed */}
       <CanvasArea
         key={key}
         canvasId={canvasId}

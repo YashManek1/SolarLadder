@@ -117,7 +117,8 @@ function CanvasArea({
     };
 
     loadCanvasData();
-  }, [canvasReady, initialData]);
+  }, [canvasReady, initialData, dataLoaded]);
+
   useEffect(() => {
     if (!canvasReady || !fabricCanvasRef.current) return;
 
@@ -270,24 +271,6 @@ function CanvasArea({
     }
   };
 
-  const undo = () => {
-    if (historyIndex > 0) {
-      fabricCanvasRef.current.loadFromJSON(history[historyIndex - 1], () => {
-        fabricCanvasRef.current.requestRenderAll();
-        setHistoryIndex(historyIndex - 1);
-      });
-    }
-  };
-
-  const redo = () => {
-    if (historyIndex < history.length - 1) {
-      fabricCanvasRef.current.loadFromJSON(history[historyIndex + 1], () => {
-        fabricCanvasRef.current.requestRenderAll();
-        setHistoryIndex(historyIndex + 1);
-      });
-    }
-  };
-
   useEffect(() => {
     if (canvasReady && fabricCanvasRef.current) {
       fabricCanvasRef.current.on("object:modified", saveToHistory);
@@ -300,7 +283,7 @@ function CanvasArea({
         fabricCanvasRef.current.off("object:removed", saveToHistory);
       };
     }
-  }, [canvasReady]);
+  }, [canvasReady, saveToHistory]);
 
   return (
     <div className="canvas-container">
