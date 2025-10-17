@@ -15,7 +15,6 @@ function CanvasEditor() {
   const [saving, setSaving] = useState(false);
   const [selectedTool, setSelectedTool] = useState("select");
   const [selectedObject, setSelectedObject] = useState(null);
-  const key = Date.now();
 
   useEffect(() => {
     const loadCanvas = async () => {
@@ -92,7 +91,7 @@ function CanvasEditor() {
       />
 
       <CanvasArea
-        key={key}
+        key={canvasId}
         canvasId={canvasId}
         initialData={canvasData}
         setCanvas={setCanvas}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Canvas, Rect, Circle, IText, PencilBrush } from "fabric";
 import "../styles/CanvasArea.css";
 
@@ -16,17 +16,6 @@ function CanvasArea({
   const [dataLoaded, setDataLoaded] = useState(false);
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const saveToHistory = useCallback(() => {
-    if (fabricCanvasRef.current) {
-      const json = fabricCanvasRef.current.toJSON();
-      setHistory((prevHistory) => {
-        const newHistory = prevHistory.slice(0, historyIndex + 1);
-        newHistory.push(json);
-        return newHistory;
-      });
-      setHistoryIndex((prev) => prev + 1);
-    }
-  }, [historyIndex]);
 
   useEffect(() => {
     let fabricCanvas = null;
@@ -128,8 +117,7 @@ function CanvasArea({
     };
 
     loadCanvasData();
-  }, [canvasReady, initialData, dataLoaded]);
-
+  }, [canvasReady, initialData]);
   useEffect(() => {
     if (!canvasReady || !fabricCanvasRef.current) return;
 
@@ -271,26 +259,48 @@ function CanvasArea({
       return () => clearTimeout(renderTimer);
     }
   }, [canvasReady]);
+
+  const saveToHistory = () => {
+    if (fabricCanvasRef.current) {
+      const json = fabricCanvasRef.current.toJSON();
+      const newHistory = history.slice(0, historyIndex + 1);
+      newHistory.push(json);
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
+    }
+  };
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      fabricCanvasRef.current.loadFromJSON(history[historyIndex - 1], () => {
+        fabricCanvasRef.current.requestRenderAll();
+        setHistoryIndex(historyIndex - 1);
+      });
+    }
+  };
+
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      fabricCanvasRef.current.loadFromJSON(history[historyIndex + 1], () => {
+        fabricCanvasRef.current.requestRenderAll();
+        setHistoryIndex(historyIndex + 1);
+      });
+    }
+  };
+
   useEffect(() => {
     if (canvasReady && fabricCanvasRef.current) {
       fabricCanvasRef.current.on("object:modified", saveToHistory);
       fabricCanvasRef.current.on("object:added", saveToHistory);
       fabricCanvasRef.current.on("object:removed", saveToHistory);
       saveToHistory();
-
       return () => {
-        if (fabricCanvasRef.current) {
-          try {
-            fabricCanvasRef.current.off("object:modified", saveToHistory);
-            fabricCanvasRef.current.off("object:added", saveToHistory);
-            fabricCanvasRef.current.off("object:removed", saveToHistory);
-          } catch (err) {
-            console.error("Error removing canvas event listeners:", err);
-          }
-        }
+        fabricCanvasRef.current.off("object:modified", saveToHistory);
+        fabricCanvasRef.current.off("object:added", saveToHistory);
+        fabricCanvasRef.current.off("object:removed", saveToHistory);
       };
     }
-  }, [canvasReady, saveToHistory]);
+  }, [canvasReady]);
 
   return (
     <div className="canvas-container">
