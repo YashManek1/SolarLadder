@@ -1,0 +1,19 @@
+.canvas-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #f5f5f5;
+  overflow: auto;
+  width: 100%;
+}
+.canvas-container > div {
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  background-color: white;
+}
+.canvas-container canvas {
+  display: block;
+}

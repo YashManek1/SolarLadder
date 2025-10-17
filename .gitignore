@@ -11,13 +11,36 @@
 # production
 /build
 
+# firebase
+.firebase/
+firebase-debug.log
+.runtimeconfig.json
+
 # misc
 .DS_Store
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IDE - JetBrains (WebStorm, IntelliJ)
+.idea/
+*.iml
+
+# cache
+.eslintcache
+.cache/
+
+# logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+firebase-debug.log*
